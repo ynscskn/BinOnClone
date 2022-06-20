@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 909c886f21ba8e543874872c67b21c8c, type: 3}
+  m_Name: TextFeedbackData_03
+  m_EditorClassIdentifier: 
+  TextFeedback:
+  - {fileID: 8681247006521853873, guid: e229379779b7b924cb3548067bc7d71b, type: 3}
+  - {fileID: 3186396898122653766, guid: 1f29512aa1422db48b67438000b34921, type: 3}
+  - {fileID: 3183506866133136727, guid: 5d16dc17265c9a043ac5c4f68e417737, type: 3}
+  - {fileID: 3979156564205883186, guid: c558cf3e8897b8d4b8f679242407ddc7, type: 3}
+  - {fileID: 4367269933002743508, guid: d2160d3bdd7774a48b8c3d4d4c095acf, type: 3}
