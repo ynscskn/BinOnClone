@@ -154,4 +154,17 @@ public class M_Observer : MonoBehaviour
 
     //    return ray.GetPoint(t);
     //}
+
+    //#if UNITY_EDITOR
+
+    //    [ContextMenu("RB_ATAMA")]
+    //    public void RB_ATAMA()
+    //    {
+    //        PieceChilds = GetComponentsInChildren<PieceChild>();
+    //        UnityEditor.EditorUtility.SetDirty(this);
+    //    }
+
+    //#endif
+
+
 }
