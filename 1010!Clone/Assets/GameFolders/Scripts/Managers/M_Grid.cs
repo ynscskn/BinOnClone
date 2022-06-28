@@ -9,6 +9,8 @@ public class M_Grid : MonoBehaviour
     public int GridHeight = 10;
     public GridItem[,] GridArray;
 
+    [HideInInspector] public Piece CurrentPiece;
+
     private void Awake()
     {
         II = this;
@@ -45,6 +47,36 @@ public class M_Grid : MonoBehaviour
         }
     }
 
+    public void PickObject(Vector2 screenPos)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(screenPos);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (hit.collider.gameObject.CompareTag("SpawnPoint") && hit.collider.gameObject.transform.childCount != 0)
+            {
+                CurrentPiece = hit.collider.GetComponentInChildren<Piece>();
+            }
+        }
+        else print("null");
+    }
+
+    public void MoveObject(Vector2 screenPos)
+    {
+        if (CurrentPiece == null) return;
+        Ray ray = Camera.main.ScreenPointToRay(screenPos);
+        float t = -ray.origin.z / ray.direction.z;
+
+        CurrentPiece.transform.position = ray.GetPoint(t);
+    }
+
+    public void TurnSpawnPoint()
+    {
+        if (CurrentPiece == null) return;
+
+        CurrentPiece.transform.localPosition = Vector3.zero;
+        CurrentPiece = null;
+    }
 
     public static M_Grid II;
 
