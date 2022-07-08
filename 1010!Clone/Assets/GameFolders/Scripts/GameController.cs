@@ -35,6 +35,6 @@ public class GameController : MonoBehaviour
     private void FingerGestures_OnFingerUp(int fingerIndex, Vector2 fingerPos, float timeHeldDown)
     {
         if (fingerIndex != 0) return;
-        M_Grid.II.TurnSpawnPoint();
+        M_Grid.II.GridControl();
     }
 }

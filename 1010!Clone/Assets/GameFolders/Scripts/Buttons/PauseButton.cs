@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PauseButton : MonoBehaviour
@@ -20,6 +21,7 @@ public class PauseButton : MonoBehaviour
     }
     void ButtonClicked()
     {
-        M_Observer.OnGamePause?.Invoke();
+        // M_Observer.OnGamePause?.Invoke();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);// Test Ýçin;
     }
 }

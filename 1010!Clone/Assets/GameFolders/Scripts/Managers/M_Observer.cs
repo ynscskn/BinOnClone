@@ -17,6 +17,8 @@ public class M_Observer : MonoBehaviour
 
     public static Action<int> OnComboEvent;
     public static Action OnGameCompleteAction;
+    public static Action OnPieceSpawn;
+
 
     private void Awake()
     {
@@ -31,6 +33,7 @@ public class M_Observer : MonoBehaviour
         OnGameNextLevel += GameNextLevel;
         OnGamePause += GamePause;
 
+        OnPieceSpawn += PieceSpawn;
         OnComboEvent += ComboEvent;
         OnGameCompleteAction += GameCompleteAction;
     }
@@ -52,8 +55,14 @@ public class M_Observer : MonoBehaviour
         OnGameNextLevel -= GameNextLevel;
         OnGamePause -= GamePause;
 
+        OnPieceSpawn -= PieceSpawn;
         OnComboEvent -= ComboEvent;
         OnGameCompleteAction -= GameCompleteAction;
+    }
+
+    private void PieceSpawn()
+    {
+        //print("PieceSpawn");
     }
 
     private void GameCompleteAction()
