@@ -10,15 +10,7 @@ public class Piece : MonoBehaviour
 
     public Tween PieceMoveTween;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
+    public List<Vector2> PieceChildsPos;
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    public SpawnPoint CurrentSpawnPoint;
 }

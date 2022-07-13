@@ -21,8 +21,6 @@ public class PieceSpawner : MonoBehaviour
 
     }
 
-
-
     private void GameCreate()
     {
 
@@ -41,6 +39,9 @@ public class PieceSpawner : MonoBehaviour
         {
             int RandomPieceNumber = Random.Range(0, Piece_Data.Piece.Length);
             Piece _piece = Instantiate(Piece_Data.Piece[RandomPieceNumber], SpawnPoints[i].transform);
+            SpawnPoints[i].CurrentPiece = _piece;
+            SpawnPoints[i].Empty = false;
+            _piece.CurrentSpawnPoint = SpawnPoints[i];
             _piece.transform.localPosition = Vector3.zero;
             _piece.transform.localScale = Vector3.one * 0.75f;
 
@@ -52,4 +53,5 @@ public class PieceSpawner : MonoBehaviour
             }
         }
     }
+
 }

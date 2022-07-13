@@ -21,7 +21,6 @@ public class PauseButton : MonoBehaviour
     }
     void ButtonClicked()
     {
-        // M_Observer.OnGamePause?.Invoke();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);// Test Ýçin;
+        M_Observer.OnGamePause?.Invoke();
     }
 }

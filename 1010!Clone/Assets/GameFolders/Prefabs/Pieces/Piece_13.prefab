@@ -241,3 +241,6 @@ MonoBehaviour:
   PieceChilds:
   - {fileID: 5453850592022629517}
   - {fileID: 3470020726335965462}
+  PieceChildsPos:
+  - {x: -0, y: 0}
+  - {x: 1, y: 0}

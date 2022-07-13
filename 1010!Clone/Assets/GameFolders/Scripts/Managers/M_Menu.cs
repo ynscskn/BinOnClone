@@ -1,104 +1,87 @@
 using UnityEngine;
 using DG.Tweening;
+using System.Collections.Generic;
+using System;
+using UnityEngine.SceneManagement;
 
 public class M_Menu : MonoBehaviour
 {
-    public GameObject MainMenuPanelPrefab;
-    public GameObject GamePanelPrefab;
-    public GameObject PausePanelPrefab;
-    public GameObject CompletePanelPrefab;
+    public GameObject MainMenuPanel;
+    public GameObject GameMenuPanel;
+    public GameObject PausePanel;
+    public GameObject GameOverPanel;
 
     [HideInInspector] public GameObject CurrentPanel;
 
     private void Awake()
     {
         M_Observer.OnGameCreate += GameCreate;
-        M_Observer.OnGameReady += GameReady;
         M_Observer.OnGameStart += GameStart;
         M_Observer.OnGamePause += GamePause;
         M_Observer.OnGameFail += GameFail;
-        M_Observer.OnGameComplete += GameComplete;
         M_Observer.OnGameRetry += GameRetry;
         M_Observer.OnGameContinue += GameContinue;
-        M_Observer.OnGameNextLevel += GameNextLevel;
+        M_Observer.OnGameMainMenu += GameMainMenu;
+
     }
 
     private void OnDestroy()
     {
         M_Observer.OnGameCreate -= GameCreate;
-        M_Observer.OnGameReady -= GameReady;
         M_Observer.OnGameStart -= GameStart;
         M_Observer.OnGamePause -= GamePause;
         M_Observer.OnGameFail -= GameFail;
-        M_Observer.OnGameComplete -= GameComplete;
         M_Observer.OnGameRetry -= GameRetry;
         M_Observer.OnGameContinue -= GameContinue;
-        M_Observer.OnGameNextLevel -= GameNextLevel;
-    }
-
-    private void Start()
-    {
-        DeleteCurrentPanel();
-        CurrentPanel = Instantiate(MainMenuPanelPrefab, transform);
+        M_Observer.OnGameMainMenu -= GameMainMenu;
     }
 
     private void GameCreate()
     {
-        DeleteCurrentPanel();
-        CurrentPanel = Instantiate(MainMenuPanelPrefab, transform);
-    }
-
-    private void GameReady()
-    {
-
+        SetPanel(MainMenuPanel);
     }
 
     private void GameStart()
     {
-        DeleteCurrentPanel();
-        CurrentPanel = Instantiate(GamePanelPrefab, transform);
+        SetPanel(GameMenuPanel);
     }
 
     private void GamePause()
     {
-        DeleteCurrentPanel();
-        CurrentPanel = Instantiate(PausePanelPrefab, transform);
-    }
-    private void GameFail()
-    {
-        //print("GameFail");
+        SetPanel(PausePanel);
     }
 
-    private void GameComplete()
+    private void GameMainMenu()
     {
-        DeleteCurrentPanel();
-        CurrentPanel = Instantiate(CompletePanelPrefab, transform);
+        SetPanel(MainMenuPanel);
+    }
+
+    private void GameFail()
+    {
+        SetPanel(GameOverPanel);
     }
 
     private void GameRetry()
     {
-        DeleteCurrentPanel();
-        CurrentPanel = Instantiate(GamePanelPrefab, transform);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        SetPanel(GameMenuPanel);
     }
 
     private void GameContinue()
     {
-        DeleteCurrentPanel();
-        CurrentPanel = Instantiate(GamePanelPrefab, transform);
+        SetPanel(GameMenuPanel);
     }
 
-    private void GameNextLevel()
-    {
-        DeleteCurrentPanel();
-        CurrentPanel = Instantiate(GamePanelPrefab, transform);
-    }
-
-    void DeleteCurrentPanel()
+    void SetPanel(GameObject Panel)
     {
         if (CurrentPanel != null)
         {
-            Destroy(CurrentPanel);
+            CurrentPanel.SetActive(false);
             CurrentPanel = null;
         }
+
+        CurrentPanel = Panel;
+        CurrentPanel.SetActive(true);
     }
 }

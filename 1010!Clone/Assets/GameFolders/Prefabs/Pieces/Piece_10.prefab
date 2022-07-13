@@ -47,6 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PieceChilds:
   - {fileID: 3246169522749005842}
+  PieceChildsPos:
+  - {x: -0, y: 0}
 --- !u!1 &6705047482846812641
 GameObject:
   m_ObjectHideFlags: 0

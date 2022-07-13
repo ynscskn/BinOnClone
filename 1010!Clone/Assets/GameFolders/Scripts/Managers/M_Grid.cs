@@ -1,8 +1,8 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
 using System.Linq;
+using UnityEngine;
 
 public class M_Grid : MonoBehaviour
 {
@@ -10,15 +10,16 @@ public class M_Grid : MonoBehaviour
     public int GridWidth = 10;
     public int GridHeight = 10;
     public GridItem[,] GridArray;
+    public SpawnPoint[] SpawnPoints;
 
-    List<GridItem> succeedGridItemList;
-    List<GridItem> deleteGridItemList;
+    public List<GridItem> succeedGridItemList;
+    public List<GridItem> deleteGridItemList;
 
     [HideInInspector] public Piece CurrentPiece;
     [HideInInspector] public int SpawnPointsCount;
+
     int placedPieceCount = 0;
-    //[HideInInspector] float pickAndMoveOffset = 2f;
-    [HideInInspector] Vector3 pickAndMoveOffset = new Vector3(0, 2, 0);
+    Vector3 pickAndMoveOffset = new Vector3(0, 2, -1);
 
 
     private void Awake()
@@ -46,6 +47,7 @@ public class M_Grid : MonoBehaviour
         succeedGridItemList = new List<GridItem>();
         deleteGridItemList = new List<GridItem>();
 
+
         GridArray = new GridItem[GridWidth, GridHeight];
         for (int i = 0; i < GridWidth; i++)
         {
@@ -56,6 +58,7 @@ public class M_Grid : MonoBehaviour
                 _gridItem.IndexI = i;
                 _gridItem.IndexJ = j;
                 GridArray[i, j] = _gridItem;
+
             }
         }
     }
@@ -73,7 +76,6 @@ public class M_Grid : MonoBehaviour
                 CurrentPiece.PieceMoveTween = CurrentPiece.transform.DOLocalMove(CurrentPiece.transform.localPosition + pickAndMoveOffset, 0.2f).SetEase(Ease.OutExpo).OnComplete(() => CurrentPiece.PieceMoveTween = null);
             }
         }
-        else print("null");
     }
 
     public void MoveObject(Vector2 screenPos)
@@ -84,16 +86,6 @@ public class M_Grid : MonoBehaviour
 
         TweenControl(CurrentPiece.PieceMoveTween);
         CurrentPiece.transform.position = ray.GetPoint(t) + pickAndMoveOffset;
-    }
-
-    public void TurnSpawnPoint()
-    {
-        if (CurrentPiece == null) return;
-
-        TweenControl(CurrentPiece.PieceMoveTween);
-        CurrentPiece.PieceMoveTween = CurrentPiece.transform.DOLocalMove(Vector3.zero, 0.2f).SetEase(Ease.OutSine);
-        CurrentPiece.transform.DOScale(Vector3.one * 0.75f, 0.2f).SetEase(Ease.OutExpo);
-        CurrentPiece = null;
     }
 
     void TweenControl(Tween tween)
@@ -115,6 +107,17 @@ public class M_Grid : MonoBehaviour
         }
     }
 
+    public void TurnSpawnPoint()
+    {
+        if (CurrentPiece == null) return;
+
+        TweenControl(CurrentPiece.PieceMoveTween);
+        Camera.main.DOShakeRotation(0.1f, 1, 2, 5);//test
+        CurrentPiece.PieceMoveTween = CurrentPiece.transform.DOLocalMove(Vector3.zero, 0.2f).SetEase(Ease.OutSine);
+        CurrentPiece.transform.DOScale(Vector3.one * 0.75f, 0.2f).SetEase(Ease.OutExpo);
+        CurrentPiece = null;
+    }
+
     bool PieceChildControl(Piece piece)
     {
         for (int i = 0; i < piece.PieceChilds.Length; i++)
@@ -127,6 +130,8 @@ public class M_Grid : MonoBehaviour
         succeedGridItemList.Clear();
         deleteGridItemList.Clear();
 
+        piece.CurrentSpawnPoint.Empty = true;
+
         placedPieceCount++;
         if (placedPieceCount == SpawnPointsCount) { M_Observer.OnPieceSpawn?.Invoke(); placedPieceCount = 0; }
 
@@ -134,13 +139,16 @@ public class M_Grid : MonoBehaviour
         {
             int posX = Mathf.FloorToInt(piece.PieceChilds[i].transform.position.x + 0.5f);
             int posY = Mathf.FloorToInt(piece.PieceChilds[i].transform.position.y + 0.5f);
-
-            GridArray[posX, posY].IsFull = true;
-            succeedGridItemList.Add(GridArray[posX, posY]);
-            piece.PieceChilds[i].transform.SetParent(GridArray[posX, posY].transform);
+            GridItem _gridItem = GridArray[posX, posY];
+            _gridItem.IsFull = true;
+            succeedGridItemList.Add(_gridItem);
+            piece.PieceChilds[i].transform.SetParent(_gridItem.transform);
             piece.PieceChilds[i].transform.localPosition = Vector3.zero;
-            GridArray[posX, posY].CurrentPieceChild = piece.PieceChilds[i];
+            _gridItem.CurrentPieceChild = piece.PieceChilds[i];
+
+            M_Score.I.Score++;
         }
+        M_Score.I.SetScore();
         Destroy(piece.gameObject);
 
         return true;
@@ -153,111 +161,132 @@ public class M_Grid : MonoBehaviour
         else return false;
     }
 
+    int totalSucceedCount, succeedCounter, _succeedScore;
     IEnumerator SucceedControl()
     {
-        print("00");
-
         deleteGridItemList.Clear();
-        int succeedCounter = 0;
+        succeedCounter = 0; totalSucceedCount = 0; _succeedScore = 0;
 
         for (int i = 0; i < succeedGridItemList.Count; i++)
         {
-            print("1");
-
             int _indexI = succeedGridItemList[i].IndexI;
             int _indexJ = succeedGridItemList[i].IndexJ;
 
             for (int a = 0; a < GridWidth; a++)
             {
-                print("2");
-
                 if (!GridArray[a, _indexJ].IsFull) break;
-
                 else succeedCounter++;
             }
-            print("3");
 
             if (succeedCounter == GridWidth)
             {
-                print("4");
-
                 succeedCounter = 0;
                 for (int a = 0; a < GridWidth; a++)
                 {
-                    print("5");
-
                     if (!GridArray[a, _indexJ].AddDeleteList)
                     {
-                        print("6");
-
                         deleteGridItemList.Add(GridArray[a, _indexJ]);
                         GridArray[a, _indexJ].AddDeleteList = true;
                     }
                 }
             }
             else succeedCounter = 0;
-            print("7");
+
+
 
             for (int a = 0; a < GridHeight; a++)
             {
-                print("8");
-
                 if (!GridArray[_indexI, a].IsFull) break;
-
                 else succeedCounter++;
             }
-            print("9");
 
             if (succeedCounter == GridHeight)
             {
-                print("10");
-
                 succeedCounter = 0;
                 for (int a = 0; a < GridHeight; a++)
                 {
-                    print("11");
-
                     if (!GridArray[_indexI, a].AddDeleteList)
                     {
-                        print("12");
-
                         deleteGridItemList.Add(GridArray[_indexI, a]);
                         GridArray[_indexI, a].AddDeleteList = true;
                     }
                 }
             }
-            else succeedCounter = 0; print("13");
+            else succeedCounter = 0;
 
         }
 
         if (deleteGridItemList.Count > 0)
         {
-            print("14");
-
             deleteGridItemList = deleteGridItemList.OrderBy(qq => Vector3.Distance(qq.transform.position, CurrentPiece.transform.position)).ToList();
+
+            totalSucceedCount = deleteGridItemList.Count / 10;
+
+            for (int i = 1; i <= totalSucceedCount; i++)
+            {
+                _succeedScore += i * GridHeight;
+            }
+
+            M_Score.I.Score += _succeedScore;
+            M_Score.I.SetScore();
 
             for (int i = 0; i < deleteGridItemList.Count; i++)
             {
-                print("15");
-
                 GridItem _gridItem = deleteGridItemList[i];
                 if (_gridItem != null)
                 {
-                    print("16");
-
-                    //Destroy(_gridItem.CurrentPieceChild.gameObject);
+                    Destroy(_gridItem.CurrentPieceChild.gameObject, 1f);
                     _gridItem.CurrentPieceChild.gameObject.SetActive(false);
                     _gridItem.IsFull = false;
                     _gridItem.AddDeleteList = false;
                     _gridItem.CurrentPieceChild = null;
 
-                    yield return new WaitForSeconds(2 / deleteGridItemList.Count); print("17");
+                    yield return new WaitForSeconds(2 / deleteGridItemList.Count);
 
                 }
             }
         }
-    }
+        yield return new WaitForSeconds(1);
+        GameOverControl();
 
+    }
+    /// <summary>
+    /// ////////////////////
+    /// </summary>
+    void GameOverControl()
+    {
+        bool cýk = false;
+        for (int i = 0; i < SpawnPoints.Length; i++)
+        {
+            if (!SpawnPoints[i].Empty)
+            {
+                if (cýk) break;
+                Piece _piece = SpawnPoints[i].CurrentPiece;
+
+                for (int y = 0; y < GridHeight; y++)
+                {
+                    if (cýk) break;
+                    for (int x = 0; x < GridWidth; x++)
+                    {
+                        if (cýk) break;
+                        if (pieceCntrl(_piece, x, y)) cýk = true;
+                    }
+                }
+            }
+        }
+
+        if (!cýk) M_Observer.OnGameFail?.Invoke();
+    }
+    bool pieceCntrl(Piece piece, int x, int y)
+    {
+        for (int i = 0; i < piece.PieceChildsPos.Count; i++)
+        {
+            int posX = Mathf.FloorToInt(x + 0.5f + piece.PieceChildsPos[i].x);
+            int posY = Mathf.FloorToInt(y + 0.5f + piece.PieceChildsPos[i].y);
+            if (!GridArrayControl(posX, posY) || GridArray[posX, posY].IsFull) return false;
+        }
+        return true;
+    }
     public static M_Grid II;
 
     public static M_Grid I

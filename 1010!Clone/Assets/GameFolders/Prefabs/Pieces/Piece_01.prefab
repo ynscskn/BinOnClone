@@ -245,6 +245,11 @@ MonoBehaviour:
   - {fileID: 5537883983157322350}
   - {fileID: 2578569557159607356}
   - {fileID: 3152860419113667420}
+  PieceChildsPos:
+  - {x: -0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 1, y: 1}
+  - {x: 0, y: 1}
 --- !u!1 &5899567361139929920
 GameObject:
   m_ObjectHideFlags: 0
