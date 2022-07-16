@@ -17,6 +17,8 @@ public class M_Score : MonoBehaviour
         M_Observer.OnGameCreate += GameCreate;
         M_Observer.OnGameStart += GameStart;
         M_Observer.OnGameFail += GameFail;
+        M_Observer.OnGameRetry += GameRetry;
+
 
     }
 
@@ -25,9 +27,14 @@ public class M_Score : MonoBehaviour
         M_Observer.OnGameCreate -= GameCreate;
         M_Observer.OnGameStart -= GameStart;
         M_Observer.OnGameFail -= GameFail;
+        M_Observer.OnGameRetry -= GameRetry;
+
     }
 
-
+    private void GameRetry()
+    {
+        GameStart();
+    }
 
     private void GameFail()
     {

@@ -20,6 +20,9 @@ public class PlayButton : MonoBehaviour
     }
     void ButtonClicked()
     {
-        M_Observer.OnGameStart?.Invoke();
+        if (M_Menu.I.OnPause) M_Observer.OnGameContinue?.Invoke();
+
+        else M_Observer.OnGameStart?.Invoke();
+
     }
 }

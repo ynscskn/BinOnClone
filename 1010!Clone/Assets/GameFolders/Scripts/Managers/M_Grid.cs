@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ public class M_Grid : MonoBehaviour
     [HideInInspector] public Piece CurrentPiece;
     [HideInInspector] public int SpawnPointsCount;
 
-    int placedPieceCount = 0;
+    int placedPieceCount;
     Vector3 pickAndMoveOffset = new Vector3(0, 2, -1);
 
 
@@ -31,10 +32,24 @@ public class M_Grid : MonoBehaviour
     private void OnEnable()
     {
         M_Observer.OnGameCreate += GameCreate;
+        M_Observer.OnGameRetry += GameRetry;
+
     }
     private void OnDisable()
     {
         M_Observer.OnGameCreate -= GameCreate;
+        M_Observer.OnGameRetry -= GameRetry;
+
+    }
+
+    private void GameRetry()
+    {
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            Destroy(this.transform.GetChild(i).gameObject);
+        }
+
+        GridCreate();
     }
 
     private void GameCreate()
@@ -44,6 +59,7 @@ public class M_Grid : MonoBehaviour
 
     private void GridCreate()
     {
+        placedPieceCount = 0;
         succeedGridItemList = new List<GridItem>();
         deleteGridItemList = new List<GridItem>();
 
@@ -112,7 +128,7 @@ public class M_Grid : MonoBehaviour
         if (CurrentPiece == null) return;
 
         TweenControl(CurrentPiece.PieceMoveTween);
-        Camera.main.DOShakeRotation(0.1f, 1, 2, 5);//test
+        Camera.main.DOShakeRotation(0.1f, 1, 2, 5); Handheld.Vibrate();//test
         CurrentPiece.PieceMoveTween = CurrentPiece.transform.DOLocalMove(Vector3.zero, 0.2f).SetEase(Ease.OutSine);
         CurrentPiece.transform.DOScale(Vector3.one * 0.75f, 0.2f).SetEase(Ease.OutExpo);
         CurrentPiece = null;
@@ -235,8 +251,12 @@ public class M_Grid : MonoBehaviour
                 GridItem _gridItem = deleteGridItemList[i];
                 if (_gridItem != null)
                 {
-                    Destroy(_gridItem.CurrentPieceChild.gameObject, 1f);
-                    _gridItem.CurrentPieceChild.gameObject.SetActive(false);
+                    _gridItem.CurrentPieceChild.transform.DOLocalRotate(Vector3.forward * 90f, 0.5f).SetEase(Ease.OutExpo);
+                    //yield return new WaitForSeconds(0.3f);
+                    _gridItem.CurrentPieceChild.transform.DOScale(Vector3.zero, 0.7f).SetEase(Ease.OutExpo);
+                    yield return new WaitForSeconds(0.05f);
+                    Destroy(_gridItem.CurrentPieceChild.gameObject, 2f);
+                    //_gridItem.CurrentPieceChild.gameObject.SetActive(false);
                     _gridItem.IsFull = false;
                     _gridItem.AddDeleteList = false;
                     _gridItem.CurrentPieceChild = null;

@@ -12,9 +12,10 @@ public class M_Menu : MonoBehaviour
     public GameObject GameOverPanel;
 
     [HideInInspector] public GameObject CurrentPanel;
-
+    [HideInInspector] public bool OnPause;
     private void Awake()
     {
+        II = this;
         M_Observer.OnGameCreate += GameCreate;
         M_Observer.OnGameStart += GameStart;
         M_Observer.OnGamePause += GamePause;
@@ -63,13 +64,12 @@ public class M_Menu : MonoBehaviour
 
     private void GameRetry()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
         SetPanel(GameMenuPanel);
     }
 
     private void GameContinue()
     {
+        OnPause = false;
         SetPanel(GameMenuPanel);
     }
 
@@ -83,5 +83,26 @@ public class M_Menu : MonoBehaviour
 
         CurrentPanel = Panel;
         CurrentPanel.SetActive(true);
+    }
+
+
+
+    public static M_Menu II;
+
+    public static M_Menu I
+    {
+        get
+        {
+            if (II == null)
+            {
+                GameObject _g = GameObject.Find("M_Menu");
+                if (_g != null)
+                {
+                    II = _g.GetComponent<M_Menu>();
+                }
+            }
+
+            return II;
+        }
     }
 }

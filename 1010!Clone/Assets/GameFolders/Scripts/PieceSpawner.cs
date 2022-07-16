@@ -11,6 +11,7 @@ public class PieceSpawner : MonoBehaviour
         M_Observer.OnGameCreate += GameCreate;
         M_Observer.OnGameStart += GameStart;
         M_Observer.OnPieceSpawn += PieceSpawn;
+        M_Observer.OnGameRetry += GameRetry;
 
     }
     private void OnDisable()
@@ -18,7 +19,20 @@ public class PieceSpawner : MonoBehaviour
         M_Observer.OnGameCreate -= GameCreate;
         M_Observer.OnGameStart -= GameStart;
         M_Observer.OnPieceSpawn -= PieceSpawn;
+        M_Observer.OnGameRetry -= GameRetry;
 
+    }
+
+    private void GameRetry()
+    {
+        for (int i = 0; i < SpawnPoints.Length; i++)
+        {
+            for (int j = 0; j < SpawnPoints[i].transform.childCount; j++)
+            {
+                Destroy(SpawnPoints[i].transform.GetChild(0).gameObject);
+            }
+        }
+        PieceSpawn();
     }
 
     private void GameCreate()

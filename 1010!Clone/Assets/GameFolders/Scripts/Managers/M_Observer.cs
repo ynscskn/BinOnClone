@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class M_Observer : MonoBehaviour
 {
     public static Action OnGameCreate;
@@ -23,6 +22,8 @@ public class M_Observer : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = 120;
+
         II = this;
         OnGameCreate += GameCreate;
         OnGameReady += GameReady;
@@ -36,8 +37,6 @@ public class M_Observer : MonoBehaviour
         OnGameMainMenu += GameMainMenu;
 
         OnPieceSpawn += PieceSpawn;
-        OnComboEvent += ComboEvent;
-        OnGameCompleteAction += GameCompleteAction;
     }
 
     private void Start()
@@ -59,8 +58,7 @@ public class M_Observer : MonoBehaviour
         OnGameMainMenu -= GameMainMenu;
 
         OnPieceSpawn -= PieceSpawn;
-        OnComboEvent -= ComboEvent;
-        OnGameCompleteAction -= GameCompleteAction;
+
     }
 
     private void GameMainMenu()
@@ -71,16 +69,6 @@ public class M_Observer : MonoBehaviour
     private void PieceSpawn()
     {
         //print("PieceSpawn");
-    }
-
-    private void GameCompleteAction()
-    {
-        //print("GameCompleteAction");
-    }
-
-    private void ComboEvent(int obj)
-    {
-        //print("ComboEvent");
     }
 
     private void GameCreate()
